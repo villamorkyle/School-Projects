@@ -1,30 +1,20 @@
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+from tkinter import Toplevel, Entry, Button, Label, Frame, Scrollbar, StringVar, IntVar, Menu
 import tkinter.messagebox as tkMessageBox
 import sqlite3
-import tkinter.ttk as ttk
-from PIL import Image, ImageTk  # Import PIL modules for handling images
+from PIL import Image, ImageTk, ImageFilter
 
-root = Tk()
-root.title("CEA Inventory System")
+root = tk.Tk()
+root.title("Computer Laboratory Inventory Manager")
+root.state('zoomed')
 
 # Load the background image
 bg_image = Image.open("cealogo.png")
 bg_photo = ImageTk.PhotoImage(bg_image)
 
-# Create a label to display the background image
-bg_label = Label(root, image=bg_photo)
-bg_label.place(relwidth=1, relheight=1)
-
-
-width = 1080
-height = 740
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-x = (screen_width/2) - (width/2)
-y = (screen_height/2) - (height/2)
-root.geometry("%dx%d+%d+%d" % (width, height, x, y))
-root.resizable()
-# root.config(bg="#6666ff")
+blurred = bg_image.filter(ImageFilter.BLUR)
+bg_photo2 = ImageTk.PhotoImage(blurred)
 
 #========================================VARIABLES========================================
 USERNAME = StringVar()
@@ -48,13 +38,13 @@ def Database():
         conn.commit()
 
 def Exit():
-    result = tkMessageBox.askquestion(message='Are you sure you want to exit?', icon="warning")
+    result = tkMessageBox.askquestion('Exit', message='Are you sure you want to exit?', icon="warning")
     if result == 'yes':
         root.destroy()
         exit()
 
 def Exit2():
-    result = tkMessageBox.askquestion(message='Are you sure you want to exit?', icon="warning")
+    result = tkMessageBox.askquestion('Exit', message='Are you sure you want to exit?', icon="warning")
     if result == 'yes':
         Home.destroy()
         exit()
@@ -75,12 +65,12 @@ def ShowLoginForm():
     
 def LoginForm():
     global lbl_result
-    TopLoginForm = Frame(loginform, width=600, height=100, bd=1, relief=SOLID)
-    TopLoginForm.pack(side=TOP, pady=20)
+    TopLoginForm = Frame(loginform, width=600, height=100, bd=1, relief="solid")
+    TopLoginForm.pack(side="top", pady=20)
     lbl_text = Label(TopLoginForm, text="Administrator Login", font=('arial', 18), width=300)
-    lbl_text.pack(fill=X)
+    lbl_text.pack(fill="x")
     MidLoginForm = Frame(loginform, width=300)
-    MidLoginForm.pack(side=TOP, pady=50)
+    MidLoginForm.pack(side="top", pady=50)
     lbl_username = Label(MidLoginForm, text="Username:", font=('arial', 15), bd=10)
     lbl_username.grid(row=0)
     lbl_password = Label(MidLoginForm, text="Password:", font=('arial', 15), bd=10)
@@ -95,33 +85,31 @@ def LoginForm():
     btn_login.grid(row=2, columnspan=2, pady=20)
     btn_login.bind('<Return>', Login)
     
-def Home():
+def HomeWindow():
     global Home
-    Home = Tk()
+    Home = Toplevel()
     Home.title("Home")
-    width = 1080
-    height = 740
-    screen_width = Home.winfo_screenwidth()
-    screen_height = Home.winfo_screenheight()
-    x = (screen_width/4) - (width/4)
-    y = (screen_height/4) - (height/4)
-    Home.geometry("%dx%d+%d+%d" % (width, height, x, y))
+    Home.geometry(f"{root.winfo_screenwidth()}x{root.winfo_screenheight()}")
     Home.resizable()
-    Title = Frame(Home, bd=1, relief=FLAT)
+
+    Title = Frame(Home, relief="flat",)
     Title.pack(pady=10)
-    lbl_display = Label(Title, text="ComLab Inventory Management System", font=('arial', 30))
-    lbl_display.pack(anchor="center")
+    lbl_display = Label(Title, text="ComLab Inventory Manager", font=('arial', 30), bd=0)
+    lbl_display.pack()
+
+    btn_add = Button(Home, text="Add New Equipment", font=('arial', 18), width=30, command=ShowAddNew)
+    btn_add.pack(pady=20)
+    btn_view = Button(Home, text="View Equipment", font=('arial', 18), width=30, command=ShowView)
+    btn_view.pack(pady=20)
+
     menubar = Menu(Home)
     filemenu = Menu(menubar, tearoff=0)
     filemenu2 = Menu(menubar, tearoff=0)
     filemenu.add_command(label="Logout", command=Logout)
     filemenu.add_command(label="Exit", command=Exit2)
-    filemenu2.add_command(label="Add new", command=ShowAddNew)
-    filemenu2.add_command(label="View", command=ShowView)
     menubar.add_cascade(label="Action", menu=filemenu)
-    menubar.add_cascade(label="Inventory", menu=filemenu2)
     Home.config(menu=menubar)
-    Home.config(bg="#32a852")
+    Home.config(bg='#C0C0C0')
 
 def ShowAddNew():
     global addnewform
@@ -138,28 +126,26 @@ def ShowAddNew():
     AddNewForm()
 
 def AddNewForm():
-    TopAddNew = Frame(addnewform, width=600, height=100, bd=1, relief=SOLID)
-    TopAddNew.pack(side=TOP, pady=20)
-    lbl_text = Label(TopAddNew, text="Add Equipment", font=('arial', 18), width=600)
-    lbl_text.pack(fill=X)
-    MidAddNew = Frame(addnewform, width=600)
-    MidAddNew.pack(side=TOP, pady=50)
+    TopAddNew = Frame(addnewform, width=600, height=100, bd=1, relief="solid")
+    TopAddNew.pack(side="top", pady=20)
+    lbl_text = Label(TopAddNew, text="Add Equipment", font=('arial', 18), )#width=600
+    lbl_text.pack(fill="x")
+    MidAddNew = Frame(addnewform, width=600,)
+    MidAddNew.pack(side="top", pady=50)
     lbl_equipmentname = Label(MidAddNew, text="Name:", font=('arial', 25), bd=10)
-    lbl_equipmentname.grid(row=0, sticky=W)
+    lbl_equipmentname.grid(row=0, sticky="w")
     lbl_status = Label(MidAddNew, text="Status:", font=('arial', 25), bd=10)
-    lbl_status.grid(row=1, sticky=W)
+    lbl_status.grid(row=1, sticky="w")
     lbl_price = Label(MidAddNew, text="Quantity:", font=('arial', 25), bd=10)
-    lbl_price.grid(row=2, sticky=W)
+    lbl_price.grid(row=2, sticky="w")
     equipmentname = Entry(MidAddNew, textvariable=EQUIPMENT_NAME, font=('arial', 25), width=15)
     equipmentname.grid(row=0, column=1)
     equipmentstatus = Entry(MidAddNew, textvariable=EQUIPMENT_STATUS, font=('arial', 25), width=15)
     equipmentstatus.grid(row=1, column=1)
     equipmentquantity = Entry(MidAddNew, textvariable=EQUIPMENT_QUANTITY, font=('arial', 25), width=15)
     equipmentquantity.grid(row=2, column=1)
-    btn_add = Button(MidAddNew, text="Save", font=('arial', 18), width=30, bg="#009ACD", command=AddNew)
+    btn_add = Button(MidAddNew, text="Add", font=('arial', 18), bg="#009ACD", command=AddNew)
     btn_add.grid(row=3, columnspan=2, pady=20)
-
-
 
 def AddNew():
     Database()
@@ -170,43 +156,53 @@ def AddNew():
     EQUIPMENT_QUANTITY.set("")
     cursor.close()
     conn.close()
+    tkMessageBox.showinfo("Success","Equipment added successfully.")
 
 def ViewForm():
     global tree
-    TopViewForm = Frame(viewform, width=600, bd=1, relief=SOLID)
-    TopViewForm.pack(side=TOP, fill=X)
-    LeftViewForm = Frame(viewform, width=600)
-    LeftViewForm.pack(side=LEFT, fill=Y)
-    MidViewForm = Frame(viewform, width=600)
-    MidViewForm.pack(side=RIGHT)
-    lbl_text = Label(TopViewForm, text="View Equipments", font=('arial', 18), width=600)
-    lbl_text.pack(fill=X)
-    lbl_txtsearch = Label(LeftViewForm, text="Search", font=('arial', 15))
-    lbl_txtsearch.pack(side=TOP, anchor=W)
-    search = Entry(LeftViewForm, textvariable=SEARCH, font=('arial', 15), width=10)
-    search.pack(side=TOP,  padx=10, fill=X)
-    btn_search = Button(LeftViewForm, text="Search", command=Search)
-    btn_search.pack(side=TOP, padx=10, pady=10, fill=X)
-    btn_reset = Button(LeftViewForm, text="Reset", command=Reset)
-    btn_reset.pack(side=TOP, padx=10, pady=10, fill=X)
-    btn_delete = Button(LeftViewForm, text="Delete", command=Delete)
-    btn_delete.pack(side=TOP, padx=10, pady=10, fill=X)
-    scrollbarx = Scrollbar(MidViewForm, orient=HORIZONTAL)
-    scrollbary = Scrollbar(MidViewForm, orient=VERTICAL)
+    TopViewForm = Frame(viewform, bd=1, relief="solid")
+    TopViewForm.pack(side="top", fill="x")
+
+    search_frame = Frame(TopViewForm)
+    search_frame.pack(side="left")
+
+    search = Entry(search_frame, textvariable=SEARCH, font=('arial', 15), width=10)
+    search.grid(row=0, column=0, padx=10)
+
+    btn_search = Button(search_frame, text="Search", command=Search)
+    btn_search.grid(row=0, column=1, padx=10, pady=10)
+
+    buttons_frame = Frame(TopViewForm)
+    buttons_frame.pack(side="right")
+
+    btn_edit = Button(buttons_frame, text="Edit", command=Edit, bg='blue')
+    btn_edit.grid(row=0, column=0, padx=10, pady=10)
+
+    btn_reset = Button(buttons_frame, text="Reset", command=Reset)
+    btn_reset.grid(row=0, column=1, padx=10, pady=10)
+
+    btn_delete = Button(buttons_frame, text="Delete", command=Delete, bg='red')
+    btn_delete.grid(row=0, column=2, padx=10, pady=10)
+
+    MidViewForm = Frame(viewform, width=700)
+    MidViewForm.pack(side="bottom",)
+
+    scrollbarx = Scrollbar(MidViewForm, orient="horizontal")
+    scrollbary = Scrollbar(MidViewForm, orient="vertical")
     tree = ttk.Treeview(MidViewForm, columns=("EquipmentID", "Equipment Name", "Equipment Status", "Equipment Quantity"), selectmode="extended", height=100, yscrollcommand=scrollbary.set, xscrollcommand=scrollbarx.set)
     scrollbary.config(command=tree.yview)
-    scrollbary.pack(side=RIGHT, fill=Y)
+    scrollbary.pack(side="right", fill="y")
     scrollbarx.config(command=tree.xview)
-    scrollbarx.pack(side=BOTTOM, fill=X)
-    tree.heading('EquipmentID', text="EquipmentID",anchor=W)
-    tree.heading('Equipment Name', text="Equipment Name",anchor=W)
-    tree.heading('Equipment Status', text="Equipment Status",anchor=W)
-    tree.heading('Equipment Quantity', text="Equipment Quantity",anchor=W)
-    tree.column('#0', stretch=NO, minwidth=0, width=0)
-    tree.column('#1', stretch=NO, minwidth=0, width=0)
-    tree.column('#2', stretch=NO, minwidth=0, width=200)
-    tree.column('#3', stretch=NO, minwidth=0, width=120)
-    tree.column('#4', stretch=NO, minwidth=0, width=120)
+    scrollbarx.pack(side="bottom", fill="x")
+    tree.heading('EquipmentID', text="EquipmentID", anchor="w")
+    tree.heading('Equipment Name', text="Equipment Name", anchor="w")
+    tree.heading('Equipment Status', text="Equipment Status", anchor="w")
+    tree.heading('Equipment Quantity', text="Equipment Quantity", anchor="w")
+    tree.column('#0', stretch="NO", minwidth=0, width=0)
+    tree.column('#1', stretch="NO", minwidth=0, width=0)
+    tree.column('#2', stretch="NO", minwidth=0, width=330)
+    tree.column('#3', stretch="NO", minwidth=0, width=250)
+    tree.column('#4', stretch="NO", minwidth=0, width=200)
     tree.pack()
     DisplayData()
 
@@ -239,7 +235,7 @@ def Delete():
     if not tree.selection():
        print("ERROR")
     else:
-        result = tkMessageBox.askquestion('Are you sure you want to delete this record?',
+        result = tkMessageBox.askquestion('Delete Equipment from Inventory', message='Are you sure you want to delete this record?',
                                           icon="warning")
         if result == 'yes':
             curItem = tree.focus()
@@ -247,18 +243,55 @@ def Delete():
             selecteditem = contents['values']
             tree.delete(curItem)
             Database()
-            cursor.execute("DELETE FROM `product` WHERE `equipment_id` = %d" % selecteditem[0])
+            cursor.execute("DELETE FROM `equipment` WHERE `equipment_id` = %d" % selecteditem[0])
             conn.commit()
             cursor.close()
             conn.close()
     
+def Edit():
+    selected_item = tree.selection()
+    if not selected_item:
+        tkMessageBox.showerror("Error", "Please select an item to edit.")
+        return
 
+    selected_item = tree.item(selected_item[0])  # Get the selected item
+    item_data = selected_item['values']
+    
+    global editform
+    editform = Toplevel()
+    editform.title("Edit Equipment")
+    editform.geometry("450x400")
+
+    fields = ["Name", "Status", "Quantity"]
+    entry_values = []
+
+    for i in range(len(fields)):
+        label = Label(editform, text=fields[i] + ":", font=('arial', 25), bd=10) 
+        label.grid(row=i, sticky="w")
+        entry = Entry(editform, font=('arial', 25), width=15)  
+        entry.insert(0, item_data[i + 1])
+        entry.grid(row=i, column=1)
+        entry_values.append(entry)
+
+    save_button = Button(editform, text="Save Changes", font=('arial', 18), bg='red', command=lambda: SaveChanges(selected_item['values'][0], *[entry.get() for entry in entry_values]))
+    save_button.grid(row=3, columnspan=2, pady=20, padx=(10, 10), )
+
+def SaveChanges(item_id, new_name, new_status, new_quantity):
+    Database()
+    cursor.execute("UPDATE `equipment` SET equipment_name=?, equipment_status=?, equipment_quantity=? WHERE equipment_id=?", (new_name, new_status, new_quantity, item_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    editform.destroy()
+    Reset()
+    tkMessageBox.showinfo("Success", "Equipment updated successfully.")
+    
 def ShowView():
     global viewform
     viewform = Toplevel()
-    viewform.title("View Product")
-    width = 600
-    height = 400
+    viewform.title("View Equipments")
+    width = 800
+    height = 600
     screen_width = Home.winfo_screenwidth()
     screen_height = Home.winfo_screenheight()
     x = (screen_width/2) - (width/2)
@@ -268,17 +301,16 @@ def ShowView():
     ViewForm()
 
 def Logout():
-    result = tkMessageBox.askquestion(message='Are you sure you want to logout?',
-                                      icon="warning")
+    result = tkMessageBox.askquestion('Logout', message='Are you sure you want to logout?', icon="warning")
     if result == 'yes': 
         admin_id = ""
         root.deiconify()
-        Home.destroy()
-  
-def Login(event=None):
-    global admin_id
+        Home.withdraw()
+
+def Login():
+    global admin_id, root
     Database()
-    if USERNAME.get == "" or PASSWORD.get() == "":
+    if USERNAME.get() == "" or PASSWORD.get() == "":
         lbl_result.config(text="Please complete the required field!", fg="red")
     else:
         cursor.execute("SELECT * FROM `admin` WHERE `username` = ? AND `password` = ?", (USERNAME.get(), PASSWORD.get()))
@@ -295,15 +327,15 @@ def Login(event=None):
             USERNAME.set("")
             PASSWORD.set("")
     cursor.close()
-    conn.close() 
+    conn.close()  
 
 def ShowHome():
-    root.withdraw()
-    Home()
-    loginform.destroy()
-
-
-#========================================MENUBAR WIDGETS==================================
+    global admin_id
+    if admin_id is not None:
+        root.withdraw()
+    HomeWindow()
+    loginform.destroy() 
+#========================================ROOT WINDOW COMPONENTS==================================
 menubar = Menu(root)
 filemenu = Menu(
     menubar,
@@ -313,21 +345,28 @@ filemenu.add_command(label="Exit", command=Exit)
 menubar.add_cascade(label="Action", menu=filemenu)
 root.config(menu=menubar)
 
-#========================================FRAME============================================
 Title = Frame(
     root, bd=1,
-    relief=FLAT)
+    relief="flat")
 Title.pack()
 
-#========================================LABEL WIDGET=====================================
 lbl_display = Label(
-    Title, 
-    text="Computer Laboratory Inventory Management System", 
-    font=('arial', 30),
+    Title,
+    text="Computer Laboratory Inventory Manager", 
+    font=('Verdana', 30, 'italic bold'),
+    image=bg_photo2,
+    padx=300,
+    pady=400,
+    compound="center",
+    fg="WHITE"
 )
 lbl_display.pack()
 
+def update_background_color():
+    lbl_display.config(bg="Gray")
+
+update_background_color()
 
 #========================================INITIALIZATION===================================
-if __name__ == '__main__':
-    root.mainloop()
+
+root.mainloop()
